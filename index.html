@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>serverless handson01</title>
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/smokejs/3.1.1/css/smoke.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/smokejs/3.1.1/js/smoke.min.js"></script>
+  
+</head>
+<body>
+<div class="container">
+  <h1 class="ng-binding">serverless handson</h1>
+  <hr>
+  <div class="row col-xs-8">
+    <div class="panel-group" id="sampleAccordion">
+      <div class="panel panel-default">
+        <div class="panel-heading  background-orange">
+          <h3 class="panel-title">
+            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+            <a data-toggle="collapse" data-parent="#sampleAccordion" href="#sampleAccordionCollapse1">
+              登録フォーム
+            </a>
+          </h3>
+        </div>
+        <div id="sampleAccordionCollapse1" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <fieldset>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-xs-2 text-right">
+                    <label class="control-label">社員番号</label>
+                  </div>
+                  <div class="col-xs-8">
+                    <input id="regist_id" type="text" class="form-control" placeholder="テキスト入力欄">
+                  </div>
+                </div>
+              </div>
+              <br>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-xs-2 text-right">
+                    <label class="control-label">名前</label>
+                  </div>
+                  <div class="col-xs-8">
+                    <input id="regist_name" type="text" class="form-control" placeholder="テキスト入力欄">
+                  </div>
+                </div>
+              </div>
+              <br>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-xs-offset-8">
+                    <button class="btn btn-primary" onClick="regist()">登録</button>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  <div class="row col-xs-12">
+    <div class="panel-group" id="sampleAccordion2">
+      <div class="panel panel-default">
+        <div class="panel-heading  background-orange">
+          <h3 class="panel-title">
+            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+            <a data-toggle="collapse" data-parent="#sampleAccordion2" href="#sampleAccordionCollapse2">
+              検索フォーム
+            </a>
+          </h3>
+        </div>
+        <div id="sampleAccordionCollapse2" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <fieldset>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-xs-2 text-right">
+                    <label class="control-label">社員番号</label>
+                  </div>
+                  <div class="col-xs-8">
+                    <input id="search_id" type="text" class="form-control" placeholder="テキスト入力欄">
+                  </div>
+                  <div class="col-xs-offset-8">
+                    <button class="btn btn-primary" onClick="search()">検索</button>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
+            <table id="table" class="table table-bordered table-hover">
+              <thead class="background-orange">
+                <tr>
+                  <th class="col-xs-1">選択</th>
+                  <th>社員番号</th>
+                  <th>名前</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+
+<script>
+API_URL="https://gnjgwz3dv6.execute-api.ap-northeast-1.amazonaws.com/api/";
+
+function search() {
+  var table = document.getElementById("table");
+  while (table.rows.length - 2 > 0) table.deleteRow(-1);
+  $.ajax({
+    type: "GET",
+    url: API_URL + "workshop",
+    dataType: 'json',
+    data: {
+      ID: $("#search_id").val()
+    },
+  })
+  .done(function(data) {
+    if (data.result == "0") {
+      console.log('search success');
+      for(let i in data.data) {
+        var json = data.data[i];
+        var table_rows = table.insertRow(-1);
+        var table_cell00 = table_rows.insertCell(-1);
+        var table_cell01 = table_rows.insertCell(-1);
+        var table_cell02 = table_rows.insertCell(-1);
+        table_cell00.innerHTML = '<input type="checkbox">';
+        table_cell01.innerHTML = !json.ID ? "" : json.ID;
+        table_cell02.innerHTML = !json.Name ? "" : json.Name;
+      }
+    } else if (data.result == "9") {
+      console.log('regist faild');
+      $.smkAlert({
+        text: data.data,
+        type: 'danger',
+        position:'top-center',
+        time: 5
+      });
+    }
+  })
+  .fail(function(XMLHttpRequest, textStatus, errorThrown) {
+    console.log(XMLHttpRequest.status);
+    console.log(textStatus);
+    console.log(errorThrown);
+  });
+};
+
+function regist() {
+  var regist_id = $("#regist_id").val()
+  var regist_name = $("#regist_name").val()
+  $.ajax({
+    type: "PUT",
+    contentType:'application/json',
+    url: API_URL + "workshop",
+    dataType: 'json',
+    data: JSON.stringify({
+      "ID": regist_id,
+      "Name": regist_name
+    }),
+  })
+  .done(function(data) {
+    if (data.result == "0") {
+      console.log('regist success');
+      $.smkAlert({
+        text: data.data,
+        type: 'success',
+        position:'top-left',
+        time: 5
+      });
+    } else if (data.result == "9") {
+      console.log('regist faild');
+      $.smkAlert({
+        text: data.data,
+        type: 'danger',
+        position:'top-center',
+        time: 5
+      });
+    }
+  })
+  .fail(function(XMLHttpRequest, textStatus, errorThrown) {
+    console.log(XMLHttpRequest.status);
+    console.log(textStatus);
+    console.log(errorThrown);
+  });
+};
+</script>
+
+<style>
+fieldset{
+    padding: 15px;
+  }
+
+.background-orange {
+    background-color: #dcdcdc !important;
+  }
+</style>
+
+</html>
