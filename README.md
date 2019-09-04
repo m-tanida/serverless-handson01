@@ -33,7 +33,6 @@ aws dynamodb create-table \
 --key-schema AttributeName=ID,KeyType=HASH \
 --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 ```
-![image](./img/readme/image.png)
 
 ## 実行
 ``` bash
