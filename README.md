@@ -1,34 +1,31 @@
 # サーバレスハンズオン
 
-## cloud9設定
+## １．cloud9の設定
 ``` bash
 $ sed -i -e s/python27/python37/g ~/.bashrc
+
 $ source ~/.bashrc
+
 $ sudo update-alternatives --config python
   # 「2」を入力して、Enter
+  
+$ sed -i -e s/aws_/#aws_/g ~/.aws/credentials
+  #下記の確認モーダルが表示されるので、「Cancel」を選択
+  #Could not update credentials
+
+  #下記の確認モーダルが表示されるので、「Permanently disable」を選択
+  #Unable to update credentials
 ```
 
 
-## 必要なライブラリのインストール
+## ２．必要なライブラリのインストール
 ``` bash
 $ cd ~/environment/serverless-handson01
 $ sudo pip install -r requirements.txt
 ```
 
 
-## クレデンシャルの削除
-``` bash
-$ sed -i -e s/aws_/#aws_/g ~/.aws/credentials
-
-#下記の確認モーダルが表示されるので、「Cancel」を選択
-#Could not update credentials
-
-#下記の確認モーダルが表示されるので、「Permanently disable」を選択
-#Unable to update credentials
-```
-
-
-## DynamoDBの作成
+## ３．DynamoDBの作成
 ``` bash
 aws dynamodb create-table \
 --table-name serverless-handson01-table \
@@ -36,6 +33,7 @@ aws dynamodb create-table \
 --key-schema AttributeName=ID,KeyType=HASH \
 --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 ```
+![image](./img/readme/image.png)
 
 ## 実行
 ``` bash

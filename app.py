@@ -7,7 +7,7 @@ from boto3.dynamodb.conditions import Key
 app = Chalice(app_name='serverless-handson01')
 table = boto3.resource('dynamodb', region_name=REGION_NAME).Table('serverless-handson01-table')
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return 'test'
 
@@ -15,7 +15,20 @@ def index():
 def test1():
     return 'test1'
 
-@app.route('/get')
-def get():
-    queryData = table.query(KeyConditionExpression = Key('ID').eq('001'))
-    return queryData
+@app.route('/workshop', methods=['GET'])
+def get_workshop():
+    request = app.current_request.query_params
+    if 'ID' in request:
+        queryData = table.query(KeyConditionExpression = Key('ID').eq(request['ID']))
+        return queryData['Items']
+    else:
+        return 'parameter error'
+
+@app.route('/workshop', methods=['PUT'])
+def put_workshop():
+    request = app.current_request.json_body
+    if 'ID' in request:
+        queryData = table.query(KeyConditionExpression = Key('ID').eq(request['ID']))
+        return queryData['Items']
+    else:
+        return 'parameter error'
