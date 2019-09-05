@@ -44,3 +44,10 @@ $ chalice local --port 8080
 $ cd ~/environment/serverless-handson01/
 $ chalice deploy
 ```
+
+## S3バケット作成
+``` bash
+aws s3api create-bucket --bucket serverless-handson01-trainingXX --region us-east-1 --create-bucket-configuration LocationConstraint=ap-northeast-1 
+aws s3 cp ./serverless-handson01/index.html s3://serverless-handson01-trainingXX --acl public-read
+https://serverless-handson01-trainingXX.s3-ap-northeast-1.amazonaws.com/index.html
+```
