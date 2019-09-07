@@ -3,6 +3,7 @@ from chalicelib.const import *
 import boto3
 from boto3.session import Session
 from boto3.dynamodb.conditions import Key
+from datetime import datetime
 
 app = Chalice(app_name='serverless-handson01')
 table = boto3.resource('dynamodb', region_name=REGION_NAME).Table('serverless-handson01-table')
@@ -13,7 +14,7 @@ ERROR_CD = "9"
 def index():
     return 'test'
 
-@app.route('/test1')
+@app.route('/test1', methods=['GET'], cors=cors_config)
 def test1():
     return 'test1'
 
